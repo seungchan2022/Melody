@@ -15,7 +15,8 @@ extension AppMain: View {
   var body: some View {
     LinkNavigationView(
       linkNavigator: viewModel.linkNavigator,
-      item: .init(path: Link.Dashboard.Path.home.rawValue))
+      item: .init(path: Link.Dashboard.Path.home.rawValue),
+      prefersLargeTitles: true)
       .ignoresSafeArea()
   }
 }

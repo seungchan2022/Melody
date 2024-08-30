@@ -9,4 +9,5 @@ import Platform
 
 struct AppSideEffect: DependencyType, DashboardEnvironmentUsable {
   let toastViewModel: ToastViewActionType
+  let searchUseCase: SearchUseCase
 }

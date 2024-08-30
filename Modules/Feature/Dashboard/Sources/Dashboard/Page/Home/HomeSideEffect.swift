@@ -23,4 +23,21 @@ struct HomeSideEffect {
   }
 }
 
-extension HomeSideEffect { }
+extension HomeSideEffect {
+  var getItem: (MusicEntity.Search.Album.Request) -> Effect<HomeReducer.Action> {
+    { req in
+      .publisher {
+        useCase.searchUseCase
+          .album(req)
+          .receive(on: main)
+          .map {
+            MusicEntity.Search.Album.Composite(
+              request: req,
+              response: $0)
+          }
+          .mapToResult()
+          .map(HomeReducer.Action.fetchItem)
+      }
+    }
+  }
+}

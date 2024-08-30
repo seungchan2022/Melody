@@ -1,4 +1,6 @@
 import ComposableArchitecture
+import DesignSystem
+import Functor
 import MusicKit
 import SwiftUI
 
@@ -7,8 +9,9 @@ import SwiftUI
 struct HomePage {
   @Bindable var store: StoreOf<HomeReducer>
 
-  @State var musicAuthorizationStatus: MusicAuthorization.Status = .notDetermined
-  @State var isWelcomeViewPresented = false
+  @State private var musicAuthorizationStatus: MusicAuthorization.Status = .notDetermined
+  @State private var isWelcomeViewPresented = false
+  @State var throttleEvent: ThrottleEvent = .init(value: "", delaySeconds: 1.5)
 
   @Environment(\.openURL) private var openURL
 }
@@ -81,8 +84,28 @@ extension HomePage {
 
 extension HomePage: View {
   var body: some View {
-    VStack {
-      Text("Home Page")
+    ScrollView {
+      LazyVStack {
+        if store.query.isEmpty {
+          VStack(spacing: 32) {
+            Image(systemName: "magnifyingglass.circle")
+              .resizable()
+              .fontWeight(.thin)
+              .frame(width: 150, height: 150)
+
+            Text("찾고 싶은 앨범을 검색해주세요.")
+              .font(.body)
+          }
+          .padding(.top, 120)
+        }
+
+        ForEach(store.itemList, id: \.id) { item in
+
+          ItemComponent(
+            viewState: .init(item: item),
+            tapAction: { _ in })
+        }
+      }
     }
     .sheet(isPresented: $isWelcomeViewPresented) {
       /// 권한 설정 View
@@ -108,9 +131,26 @@ extension HomePage: View {
       }
       .interactiveDismissDisabled()
     }
+    .scrollDismissesKeyboard(.immediately)
+    .searchable(
+      text: $store.query,
+      placement: .navigationBarDrawer(displayMode: .always),
+      prompt: "Albums")
+    .navigationTitle("Home")
+    .navigationBarTitleDisplayMode(.large)
+    .onChange(of: store.query) { _, new in
+      throttleEvent.update(value: new)
+    }
     .onAppear {
       /// checkMusicAuthorizationStatus()를 호출하여 현재 Apple Music 권한 상태를 확인합니다.
       checkMusicAuthorizationStatus()
+      throttleEvent.apply { _ in
+        store.send(.search(store.query))
+      }
+    }
+    .onDisappear {
+      throttleEvent.reset()
+      store.send(.teardown)
     }
   }
 }
