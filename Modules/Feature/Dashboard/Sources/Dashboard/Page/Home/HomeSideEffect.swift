@@ -4,6 +4,7 @@ import CombineExt
 import ComposableArchitecture
 import Domain
 import Foundation
+import MusicKit
 
 // MARK: - HomeSideEffect
 
@@ -38,6 +39,16 @@ extension HomeSideEffect {
           .mapToResult()
           .map(HomeReducer.Action.fetchItem)
       }
+    }
+  }
+
+  var routeToDetail: (Album) -> Void {
+    { item in
+      navigator.next(
+        linkItem: .init(
+          path: Link.Dashboard.Path.albumDetail.rawValue,
+          items: item),
+        isAnimated: true)
     }
   }
 }

@@ -41,6 +41,8 @@ struct HomeReducer {
     case search(String)
     case fetchItem(Result<MusicEntity.Search.Album.Composite, CompositeErrorRepository>)
 
+    case routeToDetail(Album)
+
     case throwError(CompositeErrorRepository)
   }
 
@@ -99,6 +101,10 @@ struct HomeReducer {
         case .failure(let error):
           return .run { await $0(.throwError(error)) }
         }
+
+      case .routeToDetail(let item):
+        sideEffect.routeToDetail(item)
+        return .none
 
       case .throwError(let error):
         sideEffect.useCase.toastViewModel.send(errorMessage: error.displayMessage)

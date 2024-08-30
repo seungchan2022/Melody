@@ -25,7 +25,7 @@ extension HomePage {
     case .denied:
       return "설정 열기"
     default:
-      fatalError("현재 권한 상태에 대해 버튼이 표시되지 않아야 합니다: \(musicAuthorizationStatus).")
+      return ""
     }
   }
 
@@ -103,7 +103,7 @@ extension HomePage: View {
 
           ItemComponent(
             viewState: .init(item: item),
-            tapAction: { _ in })
+            tapAction: { store.send(.routeToDetail($0)) })
         }
       }
     }

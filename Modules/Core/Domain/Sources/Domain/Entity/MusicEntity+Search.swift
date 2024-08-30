@@ -20,9 +20,14 @@ extension MusicEntity.Search.Album {
 
   public struct Response: Equatable, Codable, Sendable {
     public let albums: MusicItemCollection<Album>
+    public let track: MusicItemCollection<Track>?
 
-    public init(albums: MusicItemCollection<Album>) {
+    public init(
+      albums: MusicItemCollection<Album>,
+      track: MusicItemCollection<Track>? = .none)
+    {
       self.albums = albums
+      self.track = track
     }
   }
 
