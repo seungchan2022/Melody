@@ -1,5 +1,6 @@
 import MusicKit
 import SwiftUI
+import DesignSystem
 
 // MARK: - AlbumDetailPage.ItemComponent
 
@@ -10,7 +11,11 @@ extension AlbumDetailPage {
   }
 }
 
-extension AlbumDetailPage.ItemComponent { }
+extension AlbumDetailPage.ItemComponent { 
+  private var songDuration: String {
+    TimeFormatter.format(viewState.item.duration ?? .zero)
+  }
+}
 
 // MARK: - AlbumDetailPage.ItemComponent + View
 
@@ -24,7 +29,7 @@ extension AlbumDetailPage.ItemComponent: View {
 
           Spacer()
 
-          Text("\(viewState.item.duration?.asString ?? "")")
+          Text(songDuration)
         }
         .foregroundColor(.primary)
         .font(.body)
@@ -42,14 +47,5 @@ extension AlbumDetailPage.ItemComponent: View {
 extension AlbumDetailPage.ItemComponent {
   struct ViewState: Equatable {
     let item: Track
-  }
-}
-
-extension TimeInterval {
-  /// `TimeInterval`을 "mm:ss" 형식의 문자열로 변환
-  fileprivate var asString: String {
-    let minutes = Int(self) / 60
-    let seconds = Int(self) % 60
-    return String(format: "%d:%02d", minutes, seconds)
   }
 }
