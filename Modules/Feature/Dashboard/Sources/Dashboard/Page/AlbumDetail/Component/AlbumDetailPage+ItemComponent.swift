@@ -1,6 +1,6 @@
+import DesignSystem
 import MusicKit
 import SwiftUI
-import DesignSystem
 
 // MARK: - AlbumDetailPage.ItemComponent
 
@@ -11,7 +11,7 @@ extension AlbumDetailPage {
   }
 }
 
-extension AlbumDetailPage.ItemComponent { 
+extension AlbumDetailPage.ItemComponent {
   private var songDuration: String {
     TimeFormatter.format(viewState.item.duration ?? .zero)
   }

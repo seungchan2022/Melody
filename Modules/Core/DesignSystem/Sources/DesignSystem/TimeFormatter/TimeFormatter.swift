@@ -11,9 +11,9 @@ public enum TimeFormatter {
 
 // MARK: - TimeInterval Extension
 
-private extension TimeInterval {
+extension TimeInterval {
   /// `TimeInterval`을 "mm:ss" 형식의 문자열로 변환
-  var formattedString: String {
+  public var formattedString: String {
     let minutes = Int(self) / 60
     let seconds = Int(self) % 60
     return String(format: "%d:%02d", minutes, seconds)
