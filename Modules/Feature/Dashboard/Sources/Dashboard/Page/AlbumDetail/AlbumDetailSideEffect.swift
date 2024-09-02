@@ -2,7 +2,9 @@ import Architecture
 import Combine
 import CombineExt
 import ComposableArchitecture
+import Domain
 import Foundation
+import MusicKit
 
 // MARK: - AlbumDetailSideEffect
 
@@ -22,4 +24,16 @@ struct AlbumDetailSideEffect {
   }
 }
 
-extension AlbumDetailSideEffect { }
+extension AlbumDetailSideEffect {
+  var getItem: (MusicEntity.AlbumDetail.Track.Request) -> Effect<AlbumDetailReducer.Action> {
+    { req in
+      .publisher {
+        useCase.albumDetailUseCase
+          .track(.init(album: req.album))
+          .receive(on: main)
+          .mapToResult()
+          .map(AlbumDetailReducer.Action.fetchItem)
+      }
+    }
+  }
+}
