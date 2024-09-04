@@ -60,4 +60,14 @@ extension AlbumDetailSideEffect {
       }
     }
   }
+
+  var routeToDetail: (Album) -> Void {
+    { item in
+      navigator.next(
+        linkItem: .init(
+          path: Link.Dashboard.Path.albumDetail.rawValue,
+          items: item),
+        isAnimated: true)
+    }
+  }
 }

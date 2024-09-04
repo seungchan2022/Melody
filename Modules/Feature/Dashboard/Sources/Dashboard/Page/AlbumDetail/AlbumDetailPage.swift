@@ -155,7 +155,7 @@ extension AlbumDetailPage: View {
           ForEach(relatedAlbumList) { item in
             RelatedAlbumComponent(
               viewState: .init(item: item),
-              tapAction: { print($0) })
+              tapAction: { store.send(.routeToDetail($0)) })
           }
         }
         .padding(.top, 32)

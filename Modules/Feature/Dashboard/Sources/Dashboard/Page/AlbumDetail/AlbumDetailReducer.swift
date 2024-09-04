@@ -76,6 +76,8 @@ struct AlbumDetailReducer {
     case getSubscription
     case fetchSubscription(Result<MusicEntity.Subscription.Response, CompositeErrorRepository>)
 
+    case routeToDetail(Album)
+
     case throwError(CompositeErrorRepository)
   }
 
@@ -150,6 +152,10 @@ struct AlbumDetailReducer {
         case .failure(let error):
           return .run { await $0(.throwError(error)) }
         }
+
+      case .routeToDetail(let item):
+        sideEffect.routeToDetail(item)
+        return .none
 
       case .throwError(let error):
         sideEffect.useCase.toastViewModel.send(errorMessage: error.displayMessage)
