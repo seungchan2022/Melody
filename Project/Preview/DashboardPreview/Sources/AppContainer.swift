@@ -25,7 +25,8 @@ extension AppContainer {
     let sideEffect = AppSideEffect(
       toastViewModel: ToastViewModel(),
       searchUseCase: SearchUseCasePlatform(),
-      albumDetailUseCase: AlbumDetailUseCasePlatform())
+      albumDetailUseCase: AlbumDetailUseCasePlatform(),
+      subscriptionUseCase: SubscriptionUseCasePlatform())
 
     return .init(
       dependency: sideEffect,

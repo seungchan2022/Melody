@@ -36,4 +36,16 @@ extension AlbumDetailSideEffect {
       }
     }
   }
+
+  var getSubscription: () -> Effect<AlbumDetailReducer.Action> {
+    {
+      .publisher {
+        useCase.subscriptionUseCase
+          .subscription()
+          .receive(on: main)
+          .mapToResult()
+          .map(AlbumDetailReducer.Action.fetchSubscription)
+      }
+    }
+  }
 }

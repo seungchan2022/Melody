@@ -1,4 +1,5 @@
 import ComposableArchitecture
+import Domain
 import MusicKit
 import SwiftUI
 
@@ -24,7 +25,7 @@ extension AlbumDetailPage {
   /// 앨범 상세 뷰가 Play/Pause 버튼을 비활성화해야 할 때 `true`.
   private var isPlayButtonDisabled: Bool {
     let canPlayCatalogContent = store.musicSubscription?.canPlayCatalogContent ?? false
-    return !canPlayCatalogContent
+    return canPlayCatalogContent
   }
 
   /// 앨범 상세 뷰가 사용자가 Apple Music 구독을 제안해야 할 때 `true`.
@@ -107,7 +108,7 @@ extension AlbumDetailPage: View {
             .padding(4)
             .frame(maxWidth: 200)
           }
-          .disabled(isPlayButtonDisabled)
+          .disabled(!isPlayButtonDisabled)
           .buttonStyle(.borderedProminent)
           .animation(.easeIn(duration: 0.1), value: isPlaying)
 
@@ -137,18 +138,13 @@ extension AlbumDetailPage: View {
         .padding(.top, 32)
       }
     }
-    // 음악 구독 상태의 변경을 관찰하기 시작합니다.
-    .task {
-      for await subscription in MusicSubscription.subscriptionUpdates {
-        store.musicSubscription = subscription
-      }
-    }
     // 적절한 시점에 구독 제안을 표시합니다.
     .musicSubscriptionOffer(isPresented: $store.isShowingSubscriptionOffer, options: store.subscriptionOfferOptions)
     .navigationTitle(store.item.title)
     .navigationBarTitleDisplayMode(.large)
     .onAppear {
       store.send(.getItem(store.item))
+      store.send(.getSubscription)
     }
   }
 }

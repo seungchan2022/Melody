@@ -11,4 +11,5 @@ struct AppSideEffect: DependencyType, DashboardEnvironmentUsable {
   let toastViewModel: ToastViewActionType
   let searchUseCase: SearchUseCase
   let albumDetailUseCase: AlbumDetailUseCase
+  let subscriptionUseCase: SubscriptionUseCase
 }

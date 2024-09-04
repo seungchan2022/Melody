@@ -47,7 +47,8 @@ struct AlbumDetailReducer {
     /// - NOTE: 앨범 상세 뷰가 플레이어에 재생 대기열을 설정했을 때 `true`.
     var isPlaybackQueueSet = false
 
-    var musicSubscription: MusicSubscription?
+    ///    var musicSubscription: MusicSubscription?
+    var musicSubscription: MusicEntity.Subscription.Response?
 
     /// 앨범 상세 뷰가 Apple Music에 대한 구독 제안을 표시할지 제어하는 상태.
     var isShowingSubscriptionOffer = false
@@ -55,6 +56,7 @@ struct AlbumDetailReducer {
     /// Apple Music 구독 제안의 옵션.
     var subscriptionOfferOptions: MusicSubscriptionOffer.Options = .default
 
+    var fetchSubscription: FetchState.Data<MusicEntity.Subscription.Response?> = .init(isLoading: false, value: .none)
   }
 
   enum Action: Equatable, BindableAction {
@@ -64,12 +66,16 @@ struct AlbumDetailReducer {
     case getItem(Album)
     case fetchItem(Result<MusicEntity.AlbumDetail.Track.Response, CompositeErrorRepository>)
 
+    case getSubscription
+    case fetchSubscription(Result<MusicEntity.Subscription.Response, CompositeErrorRepository>)
+
     case throwError(CompositeErrorRepository)
   }
 
   enum CancelID: Equatable, CaseIterable {
     case teardown
     case requestItem
+    case requestSubscription
   }
 
   var body: some Reducer<State, Action> {
@@ -89,12 +95,30 @@ struct AlbumDetailReducer {
           .getItem(.init(album: item))
           .cancellable(pageID: pageID, id: CancelID.requestItem, cancelInFlight: true)
 
+      case .getSubscription:
+        state.fetchSubscription.isLoading = true
+        return sideEffect
+          .getSubscription()
+          .cancellable(pageID: pageID, id: CancelID.requestSubscription, cancelInFlight: true)
+
       case .fetchItem(let result):
         state.fetchItem.isLoading = false
         switch result {
         case .success(let item):
           state.fetchItem.value = item
           state.tracks = item.tracks
+          return .none
+
+        case .failure(let error):
+          return .run { await $0(.throwError(error)) }
+        }
+
+      case .fetchSubscription(let result):
+        state.fetchSubscription.isLoading = false
+        switch result {
+        case .success(let item):
+          state.fetchSubscription.value = item
+          state.musicSubscription = item
           return .none
 
         case .failure(let error):
