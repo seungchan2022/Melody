@@ -55,24 +55,20 @@ extension AlbumDetailPage {
   }
 
   private func handlePlayButtonSelected() {
-    if !isPlaying {
-      if !store.isPlaybackQueueSet {
-        player.queue = [store.item]
-        store.isPlaybackQueueSet = true
-        beginPlaying()
-      } else {
-        Task {
-          do {
-            try await player.play()
-          } catch {
-            print("재생을 다시 시작하는 데 실패했습니다: \(error).")
-          }
-        }
-      }
-    } else {
-      player.pause()
+    // 이미 재생 중인 음악이 있으면 멈춥니다.
+    if isPlaying {
+      player.stop()  // 현재 재생 중인 음악을 멈춥니다.
     }
+
+    // 새로운 음악을 재생합니다.
+    if !store.isPlaybackQueueSet {
+      player.queue = [store.item]
+      store.isPlaybackQueueSet = true
+    }
+
+    beginPlaying()
   }
+
 
   private func beginPlaying() {
     Task {
@@ -102,8 +98,8 @@ extension AlbumDetailPage: View {
         HStack {
           Button(action: handlePlayButtonSelected) {
             HStack {
-              Image(systemName: isPlaying ? "pause.fill" : "play.fill")
-              Text(isPlaying ? "Pause" : "Play")
+              Image(systemName: "play.fill")
+              Text("Play")
             }
             .padding(4)
             .frame(maxWidth: 200)
