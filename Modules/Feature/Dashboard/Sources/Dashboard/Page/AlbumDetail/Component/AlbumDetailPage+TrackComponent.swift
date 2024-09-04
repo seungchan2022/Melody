@@ -2,24 +2,24 @@ import DesignSystem
 import MusicKit
 import SwiftUI
 
-// MARK: - AlbumDetailPage.ItemComponent
+// MARK: - AlbumDetailPage.TrackComponent
 
 extension AlbumDetailPage {
-  struct ItemComponent {
+  struct TrackComponent {
     let viewState: ViewState
     let tapAction: () -> Void
   }
 }
 
-extension AlbumDetailPage.ItemComponent {
+extension AlbumDetailPage.TrackComponent {
   private var songDuration: String {
     TimeFormatter.format(viewState.item.duration ?? .zero)
   }
 }
 
-// MARK: - AlbumDetailPage.ItemComponent + View
+// MARK: - AlbumDetailPage.TrackComponent + View
 
-extension AlbumDetailPage.ItemComponent: View {
+extension AlbumDetailPage.TrackComponent: View {
   var body: some View {
     Button(action: { tapAction() }) {
       VStack {
@@ -42,9 +42,9 @@ extension AlbumDetailPage.ItemComponent: View {
   }
 }
 
-// MARK: - AlbumDetailPage.ItemComponent.ViewState
+// MARK: - AlbumDetailPage.TrackComponent.ViewState
 
-extension AlbumDetailPage.ItemComponent {
+extension AlbumDetailPage.TrackComponent {
   struct ViewState: Equatable {
     let item: Track
   }

@@ -25,14 +25,14 @@ struct AlbumDetailSideEffect {
 }
 
 extension AlbumDetailSideEffect {
-  var getItem: (MusicEntity.AlbumDetail.Track.Request) -> Effect<AlbumDetailReducer.Action> {
+  var getTrack: (MusicEntity.AlbumDetail.Track.Request) -> Effect<AlbumDetailReducer.Action> {
     { req in
       .publisher {
         useCase.albumDetailUseCase
           .track(.init(album: req.album))
           .receive(on: main)
           .mapToResult()
-          .map(AlbumDetailReducer.Action.fetchItem)
+          .map(AlbumDetailReducer.Action.fetchTrackItem)
       }
     }
   }

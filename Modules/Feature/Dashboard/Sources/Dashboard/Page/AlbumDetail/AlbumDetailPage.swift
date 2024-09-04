@@ -127,10 +127,10 @@ extension AlbumDetailPage: View {
         .padding(.horizontal, 16)
       }
 
-      if let loadedTracks = store.tracks, !loadedTracks.isEmpty {
+      if let loadedTracks = store.trackItemList, !loadedTracks.isEmpty {
         LazyVStack {
           ForEach(loadedTracks) { item in
-            ItemComponent(viewState: .init(item: item)) {
+            TrackComponent(viewState: .init(item: item)) {
               handleTrackSelected(item, loadedTracks: loadedTracks)
             }
           }
@@ -143,7 +143,7 @@ extension AlbumDetailPage: View {
     .navigationTitle(store.item.title)
     .navigationBarTitleDisplayMode(.large)
     .onAppear {
-      store.send(.getItem(store.item))
+      store.send(.getTrack(store.item))
       store.send(.getSubscription)
     }
   }

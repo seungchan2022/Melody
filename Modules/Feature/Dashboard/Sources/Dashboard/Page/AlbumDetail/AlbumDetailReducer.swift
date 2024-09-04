@@ -39,10 +39,10 @@ struct AlbumDetailReducer {
 
     var item: Album
 
-    var fetchItem: FetchState.Data<MusicEntity.AlbumDetail.Track.Response?> = .init(isLoading: false, value: .none)
+    var fetchTrackItem: FetchState.Data<MusicEntity.AlbumDetail.Track.Response?> = .init(isLoading: false, value: .none)
 
     /// 앨범에 포함된 트랙들.
-    var tracks: MusicItemCollection<Track>?
+    var trackItemList: MusicItemCollection<Track>?
 
     /// - NOTE: 앨범 상세 뷰가 플레이어에 재생 대기열을 설정했을 때 `true`.
     var isPlaybackQueueSet = false
@@ -63,8 +63,8 @@ struct AlbumDetailReducer {
     case binding(BindingAction<State>)
     case teardown
 
-    case getItem(Album)
-    case fetchItem(Result<MusicEntity.AlbumDetail.Track.Response, CompositeErrorRepository>)
+    case getTrack(Album)
+    case fetchTrackItem(Result<MusicEntity.AlbumDetail.Track.Response, CompositeErrorRepository>)
 
     case getSubscription
     case fetchSubscription(Result<MusicEntity.Subscription.Response, CompositeErrorRepository>)
@@ -74,7 +74,7 @@ struct AlbumDetailReducer {
 
   enum CancelID: Equatable, CaseIterable {
     case teardown
-    case requestItem
+    case requestTrackItem
     case requestSubscription
   }
 
@@ -89,11 +89,11 @@ struct AlbumDetailReducer {
         return .concatenate(
           CancelID.allCases.map { .cancel(pageID: pageID, id: $0) })
 
-      case .getItem(let item):
-        state.fetchItem.isLoading = true
+      case .getTrack(let item):
+        state.fetchTrackItem.isLoading = true
         return sideEffect
-          .getItem(.init(album: item))
-          .cancellable(pageID: pageID, id: CancelID.requestItem, cancelInFlight: true)
+          .getTrack(.init(album: item))
+          .cancellable(pageID: pageID, id: CancelID.requestTrackItem, cancelInFlight: true)
 
       case .getSubscription:
         state.fetchSubscription.isLoading = true
@@ -101,12 +101,12 @@ struct AlbumDetailReducer {
           .getSubscription()
           .cancellable(pageID: pageID, id: CancelID.requestSubscription, cancelInFlight: true)
 
-      case .fetchItem(let result):
-        state.fetchItem.isLoading = false
+      case .fetchTrackItem(let result):
+        state.fetchTrackItem.isLoading = false
         switch result {
         case .success(let item):
-          state.fetchItem.value = item
-          state.tracks = item.tracks
+          state.fetchTrackItem.value = item
+          state.trackItemList = item.tracks
           return .none
 
         case .failure(let error):
