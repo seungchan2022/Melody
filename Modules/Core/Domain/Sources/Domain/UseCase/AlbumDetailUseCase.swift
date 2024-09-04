@@ -5,4 +5,9 @@ public protocol AlbumDetailUseCase {
     MusicEntity.AlbumDetail.Track.Response,
     CompositeErrorRepository
   > { get }
+
+  var relatedAlbum: (MusicEntity.AlbumDetail.RelatedAlbum.Request) -> AnyPublisher<
+    MusicEntity.AlbumDetail.RelatedAlbum.Response,
+    CompositeErrorRepository
+  > { get }
 }

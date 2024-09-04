@@ -26,12 +26,45 @@ extension AlbumDetailUseCasePlatform: AlbumDetailUseCase {
 
             let response = try await request.response()
 
-            guard let playList = response.items.first else { return }
+            guard let album = response.items.first else { return }
 
-            let detailedPlayList = try await playList.with([.tracks])
-            let tracks = detailedPlayList.tracks ?? []
+            let albumTrack = try await album.with([.tracks])
+            let trackItemList = albumTrack.tracks ?? []
 
-            let result = MusicEntity.AlbumDetail.Track.Response(tracks: tracks)
+            let result = MusicEntity.AlbumDetail.Track.Response(tracks: trackItemList)
+
+            return promise(.success(result))
+
+          } catch {
+            return promise(.failure(.other(error)))
+          }
+        }
+      }
+      .eraseToAnyPublisher()
+    }
+  }
+
+  public var relatedAlbum: (MusicEntity.AlbumDetail.RelatedAlbum.Request) -> AnyPublisher<
+    MusicEntity.AlbumDetail.RelatedAlbum.Response,
+    CompositeErrorRepository
+  > {
+    { req in
+      Future<MusicEntity.AlbumDetail.RelatedAlbum.Response, CompositeErrorRepository> { promise in
+        Task {
+          do {
+            let request = MusicCatalogResourceRequest<Album>(
+              matching: \.id,
+              equalTo: MusicItemID(rawValue: req.album.id.rawValue))
+
+            let response = try await request.response()
+
+            guard let detailedAlbum = try await response.items.first?.with([.artists]) else { return }
+
+            let relatedArtist = try await detailedAlbum.artists?.first?.with([.albums])
+
+            let albumList = relatedArtist?.albums ?? []
+
+            let result = MusicEntity.AlbumDetail.RelatedAlbum.Response(albums: albumList)
 
             return promise(.success(result))
 

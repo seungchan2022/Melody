@@ -41,8 +41,12 @@ struct AlbumDetailReducer {
 
     var fetchTrackItem: FetchState.Data<MusicEntity.AlbumDetail.Track.Response?> = .init(isLoading: false, value: .none)
 
+    var fetchRelatedAlbum: FetchState.Data<MusicEntity.AlbumDetail.RelatedAlbum.Response?> = .init(isLoading: false, value: .none)
+
     /// 앨범에 포함된 트랙들.
     var trackItemList: MusicItemCollection<Track>?
+
+    var relatedAlbumList: MusicItemCollection<Album>?
 
     /// - NOTE: 앨범 상세 뷰가 플레이어에 재생 대기열을 설정했을 때 `true`.
     var isPlaybackQueueSet = false
@@ -66,6 +70,9 @@ struct AlbumDetailReducer {
     case getTrack(Album)
     case fetchTrackItem(Result<MusicEntity.AlbumDetail.Track.Response, CompositeErrorRepository>)
 
+    case getRelatedAlbum(Album)
+    case fetchRelatedAlbum(Result<MusicEntity.AlbumDetail.RelatedAlbum.Response, CompositeErrorRepository>)
+
     case getSubscription
     case fetchSubscription(Result<MusicEntity.Subscription.Response, CompositeErrorRepository>)
 
@@ -75,6 +82,7 @@ struct AlbumDetailReducer {
   enum CancelID: Equatable, CaseIterable {
     case teardown
     case requestTrackItem
+    case requestRelatedAlbum
     case requestSubscription
   }
 
@@ -95,6 +103,12 @@ struct AlbumDetailReducer {
           .getTrack(.init(album: item))
           .cancellable(pageID: pageID, id: CancelID.requestTrackItem, cancelInFlight: true)
 
+      case .getRelatedAlbum(let item):
+        state.fetchRelatedAlbum.isLoading = true
+        return sideEffect
+          .getRelatedAlbum(.init(album: item))
+          .cancellable(pageID: pageID, id: CancelID.requestRelatedAlbum, cancelInFlight: true)
+
       case .getSubscription:
         state.fetchSubscription.isLoading = true
         return sideEffect
@@ -107,6 +121,18 @@ struct AlbumDetailReducer {
         case .success(let item):
           state.fetchTrackItem.value = item
           state.trackItemList = item.tracks
+          return .none
+
+        case .failure(let error):
+          return .run { await $0(.throwError(error)) }
+        }
+
+      case .fetchRelatedAlbum(let result):
+        state.fetchRelatedAlbum.isLoading = false
+        switch result {
+        case .success(let item):
+          state.fetchRelatedAlbum.value = item
+          state.relatedAlbumList = item.albums
           return .none
 
         case .failure(let error):

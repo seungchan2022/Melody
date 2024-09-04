@@ -23,9 +23,9 @@ extension SearchUseCasePlatform: SearchUseCase {
             request.limit = 5
             let response = try await request.response()
 
-            let albums = response.albums
+            let albumItemList = response.albums
 
-            let searchResponse = MusicEntity.Search.Album.Response(albums: albums)
+            let searchResponse = MusicEntity.Search.Album.Response(albums: albumItemList)
             return promise(.success(searchResponse))
 
           } catch {

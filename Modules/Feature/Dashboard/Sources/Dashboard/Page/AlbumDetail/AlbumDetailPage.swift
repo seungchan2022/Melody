@@ -128,11 +128,34 @@ extension AlbumDetailPage: View {
       }
 
       if let loadedTracks = store.trackItemList, !loadedTracks.isEmpty {
-        LazyVStack {
+        LazyVStack(alignment: .leading, spacing: 8) {
+          Text("TRACKS")
+            .foregroundColor(.secondary)
+            .padding(.horizontal, 16)
+
+          Divider()
+
           ForEach(loadedTracks) { item in
             TrackComponent(viewState: .init(item: item)) {
               handleTrackSelected(item, loadedTracks: loadedTracks)
             }
+          }
+        }
+        .padding(.top, 32)
+      }
+
+      if let relatedAlbumList = store.relatedAlbumList, !relatedAlbumList.isEmpty {
+        LazyVStack(alignment: .leading, spacing: 8) {
+          Text("RELATED ALBUMS")
+            .foregroundColor(.secondary)
+            .padding(.horizontal, 16)
+
+          Divider()
+
+          ForEach(relatedAlbumList) { item in
+            RelatedAlbumComponent(
+              viewState: .init(item: item),
+              tapAction: { print($0) })
           }
         }
         .padding(.top, 32)
@@ -144,6 +167,7 @@ extension AlbumDetailPage: View {
     .navigationBarTitleDisplayMode(.large)
     .onAppear {
       store.send(.getTrack(store.item))
+      store.send(.getRelatedAlbum(store.item))
       store.send(.getSubscription)
     }
   }

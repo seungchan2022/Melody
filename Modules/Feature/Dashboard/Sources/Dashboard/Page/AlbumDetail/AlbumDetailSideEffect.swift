@@ -29,10 +29,22 @@ extension AlbumDetailSideEffect {
     { req in
       .publisher {
         useCase.albumDetailUseCase
-          .track(.init(album: req.album))
+          .track(req)
           .receive(on: main)
           .mapToResult()
           .map(AlbumDetailReducer.Action.fetchTrackItem)
+      }
+    }
+  }
+
+  var getRelatedAlbum: (MusicEntity.AlbumDetail.RelatedAlbum.Request) -> Effect<AlbumDetailReducer.Action> {
+    { req in
+      .publisher {
+        useCase.albumDetailUseCase
+          .relatedAlbum(req)
+          .receive(on: main)
+          .mapToResult()
+          .map(AlbumDetailReducer.Action.fetchRelatedAlbum)
       }
     }
   }

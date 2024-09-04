@@ -23,6 +23,8 @@ extension AlbumDetailPage.TrackComponent: View {
   var body: some View {
     Button(action: { tapAction() }) {
       VStack {
+        Spacer()
+
         HStack {
           Text(viewState.item.title)
             .lineLimit(1)
@@ -35,6 +37,8 @@ extension AlbumDetailPage.TrackComponent: View {
         .font(.body)
         .padding(.horizontal, 16)
         .padding(.vertical, 4)
+
+        Spacer()
 
         Divider()
       }
